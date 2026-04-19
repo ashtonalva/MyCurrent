@@ -1,0 +1,19 @@
+{
+  "sleep_index_rate": 0.72,
+  "sleep_duration_hours": 6.8,
+  "caffeine_intake": 180,
+  "time_before_bed_hours": 5.0,
+  "screen_time": 3.0,
+  "physical_activity_minutes": 40,
+  "steps": 8200,
+  "activity_minutes": 55,
+  "bed_time": 23.5,
+  "wake_time": 7.2,
+  "sleep_consistency_score": 0.78,
+  "sleep_debt": 1.2,
+  "recovery_index": 0.85,
+  "caffeine_x_time_before_sleep": 900,
+  "activity_balance": 0.82,
+  "circadian_alignment": 0.74,
+  "age": 21
+}
