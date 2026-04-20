@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct HealthInputsView: View {
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var store: LocalStore
     @State private var age = ""
     @State private var screenTime = ""
@@ -87,6 +88,11 @@ struct HealthInputsView: View {
                 .scrollContentBackground(.hidden)
             }
             .navigationTitle("Health Inputs")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
             .onAppear {
                 age = "\(store.healthProfile.age)"
                 screenTime = "\(store.healthProfile.screenTimeMinutes)"

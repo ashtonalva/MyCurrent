@@ -32,14 +32,23 @@ struct CaffeineLogView: View {
 
                 Form {
                     Section {
-                        TextField("Time (HH:mm)", text: $time)
-                        TextField("Caffeine mg", text: $mg)
+                        TextField("", text: $time, prompt: caffeineTextFieldPrompt("Time (HH:mm)"))
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(.white)
+                            .textInputAutocapitalization(.never)
+                            .keyboardType(.numbersAndPunctuation)
+                        TextField("", text: $mg, prompt: caffeineTextFieldPrompt("Caffeine mg"))
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(.white)
                             .keyboardType(.numberPad)
-                        TextField("Label", text: $label)
+                        TextField("", text: $label, prompt: caffeineTextFieldPrompt("Label"))
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(.white)
                         if !errorMessage.isEmpty {
                             Text(errorMessage)
                                 .foregroundStyle(.red)
-                                .font(.caption)
+                                .font(.subheadline.weight(.medium))
+                                .fixedSize(horizontal: false, vertical: true)
                         }
 
                         Button("Add Entry") {
@@ -63,25 +72,33 @@ struct CaffeineLogView: View {
                         .disabled(!canAddEntry)
                     }
                     header: {
-                        Label("Add Drink", systemImage: "cup.and.saucer.fill")
-                            .foregroundStyle(AppTheme.sectionHeader)
+                        caffeineSectionHeader(title: "Add Drink", icon: "cup.and.saucer.fill")
                     }
                     .listRowBackground(AppTheme.formRowBackground)
 
                     Section {
                         ForEach(store.caffeineEntries) { entry in
-                            HStack {
+                            HStack(alignment: .center, spacing: 12) {
                                 Text(entry.time)
-                                Spacer()
-                                Text("\(entry.mg)mg")
+                                    .font(.body.weight(.semibold))
+                                    .foregroundStyle(.white)
+                                    .monospacedDigit()
+                                Spacer(minLength: 8)
+                                Text("\(entry.mg) mg")
+                                    .font(.body.weight(.bold))
+                                    .foregroundStyle(.white)
+                                    .monospacedDigit()
                                 Text(entry.label)
-                                    .foregroundStyle(.secondary)
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundStyle(.white.opacity(0.82))
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.trailing)
                             }
+                            .padding(.vertical, 2)
                         }
                         .onDelete(perform: deleteEntries)
                     } header: {
-                        Label("Today", systemImage: "clock.fill")
-                            .foregroundStyle(AppTheme.sectionHeader)
+                        caffeineSectionHeader(title: "Today", icon: "clock.fill")
                     }
                     .listRowBackground(AppTheme.formRowBackground)
                 }
@@ -98,5 +115,26 @@ struct CaffeineLogView: View {
         store.caffeineEntries.remove(atOffsets: offsets)
         store.saveCaffeine()
         toastMessage = "Caffeine entry deleted."
+    }
+
+    private func caffeineSectionHeader(title: String, icon: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.35), radius: 0, x: 0, y: 1)
+            Text(title)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.45), radius: 0, x: 0, y: 1)
+                .textCase(nil)
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func caffeineTextFieldPrompt(_ string: String) -> Text {
+        Text(string)
+            .foregroundStyle(.white.opacity(0.92))
+            .font(.body.weight(.medium))
     }
 }

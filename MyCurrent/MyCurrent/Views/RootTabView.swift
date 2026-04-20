@@ -18,9 +18,9 @@ struct RootTabView: View {
                     Label("Caffeine", systemImage: "cup.and.saucer")
                 }
 
-            HealthInputsView()
+            HumanDeltaInsightsView()
                 .tabItem {
-                    Label("Health", systemImage: "heart.text.square")
+                    Label("Human Δ", systemImage: "triangle.fill")
                 }
 
             ScheduleInputView()

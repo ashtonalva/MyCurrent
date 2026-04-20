@@ -18,7 +18,8 @@ struct OceanCardModifier: ViewModifier {
 }
 
 extension View {
-    func oceanCard(contentPadding: CGFloat = 16) -> some View {
+    /// Tighter padding keeps frosted material panels visually smaller while preserving corner radius.
+    func oceanCard(contentPadding: CGFloat = 8) -> some View {
         modifier(OceanCardModifier(contentPadding: contentPadding))
     }
 }

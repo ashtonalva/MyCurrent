@@ -32,24 +32,36 @@ struct SleepInputView: View {
 
                 Form {
                     Section {
-                        TextField("Bedtime (HH:mm)", text: $bedtime)
-                        TextField("Wake Time (HH:mm)", text: $wakeTime)
+                        TextField("", text: $bedtime, prompt: sleepTextFieldPrompt("Bedtime (HH:mm)"))
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(.white)
+                            .textInputAutocapitalization(.never)
+                            .keyboardType(.numbersAndPunctuation)
+                        TextField("", text: $wakeTime, prompt: sleepTextFieldPrompt("Wake Time (HH:mm)"))
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(.white)
+                            .textInputAutocapitalization(.never)
+                            .keyboardType(.numbersAndPunctuation)
                         HStack {
                             Text("Sleep Quality")
+                                .foregroundStyle(.white.opacity(0.95))
+                                .font(.body.weight(.semibold))
                             Spacer()
                             Text("\(Int(quality))")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.white)
+                                .font(.body.weight(.bold).monospacedDigit())
                         }
                         Slider(value: $quality, in: 0...100, step: 1)
+                            .tint(AppTheme.accent)
                         if !errorMessage.isEmpty {
                             Text(errorMessage)
                                 .foregroundStyle(.red)
-                                .font(.caption)
+                                .font(.subheadline.weight(.medium))
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     header: {
-                        Label("Sleep Log", systemImage: "moon.zzz.fill")
-                            .foregroundStyle(AppTheme.sectionHeader)
+                        sleepSectionHeader(title: "Sleep Log", icon: "moon.zzz.fill")
                     }
                     .listRowBackground(AppTheme.formRowBackground)
 
@@ -82,5 +94,26 @@ struct SleepInputView: View {
             .animation(.easeInOut(duration: 0.7), value: oceanState)
             .toastMessage($toastMessage)
         }
+    }
+
+    private func sleepSectionHeader(title: String, icon: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.35), radius: 0, x: 0, y: 1)
+            Text(title)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.45), radius: 0, x: 0, y: 1)
+                .textCase(nil)
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func sleepTextFieldPrompt(_ string: String) -> Text {
+        Text(string)
+            .foregroundStyle(.white.opacity(0.92))
+            .font(.body.weight(.medium))
     }
 }

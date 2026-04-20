@@ -8,6 +8,7 @@ final class LocalStore: ObservableObject {
     @Published var healthProfile: HealthProfile
     @Published var feedbackHistory: [UserScoreFeedback]
     @Published var lastMLInputExportAt: Date?
+    @Published var metricHistory: [DailyMetricSnapshot]
 
     private let sleepKey = "mycurrent.sleep"
     private let caffeineKey = "mycurrent.caffeine"
@@ -15,6 +16,7 @@ final class LocalStore: ObservableObject {
     private let profileKey = "mycurrent.healthProfile"
     private let feedbackKey = "mycurrent.feedback"
     private let mlInputExportKey = "mycurrent.mlInputExportAt"
+    private let metricHistoryKey = "mycurrent.metricHistory14"
     private let mlBridgeService = MLBridgeService()
 
     init() {
@@ -28,26 +30,31 @@ final class LocalStore: ObservableObject {
         self.healthProfile = LocalStore.load(key: profileKey, fallback: HealthProfile(age: 20, screenTimeMinutes: 240, activityMinutes: 40))
         self.feedbackHistory = LocalStore.load(key: feedbackKey, fallback: [])
         self.lastMLInputExportAt = LocalStore.load(key: mlInputExportKey, fallback: nil)
+        self.metricHistory = LocalStore.load(key: metricHistoryKey, fallback: [])
     }
 
     func saveSleep() {
         LocalStore.save(value: sleepLog, key: sleepKey)
         refreshMLBridgeInput()
+        refreshMetricSnapshot()
     }
 
     func saveCaffeine() {
         LocalStore.save(value: caffeineEntries, key: caffeineKey)
         refreshMLBridgeInput()
+        refreshMetricSnapshot()
     }
 
     func saveSchedule() {
         LocalStore.save(value: scheduleBlocks, key: scheduleKey)
         refreshMLBridgeInput()
+        refreshMetricSnapshot()
     }
 
     func saveHealthProfile() {
         LocalStore.save(value: healthProfile, key: profileKey)
         refreshMLBridgeInput()
+        refreshMetricSnapshot()
     }
 
     func saveFeedback() {
@@ -71,6 +78,40 @@ final class LocalStore: ObservableObject {
     func removeFeedback(id: UUID) {
         feedbackHistory.removeAll { $0.id == id }
         saveFeedback()
+    }
+
+    /// Upsert today’s snapshot for Human Δ visuals (call after saves / on dashboard appear).
+    func refreshMetricSnapshot() {
+        let sleepHours = estimateSleepHours(from: sleepLog)
+        let caffeineMg = caffeineEntries.reduce(0) { $0 + $1.mg }
+        let stress = HumanDeltaVisualContext.stressProxy(
+            caffeineTotalMg: caffeineMg,
+            scheduleBlockCount: scheduleBlocks.count,
+            screenMinutes: healthProfile.screenTimeMinutes
+        )
+        let day = DailyMetricSnapshot.dayId()
+        var next = metricHistory
+        let snap = DailyMetricSnapshot(
+            dayId: day,
+            sleepHours: sleepHours,
+            stressProxy: stress,
+            activityMinutes: healthProfile.activityMinutes
+        )
+        if let idx = next.firstIndex(where: { $0.dayId == day }) {
+            next[idx] = snap
+        } else {
+            next.append(snap)
+            next.sort { $0.dayId < $1.dayId }
+            if next.count > 14 {
+                next = Array(next.suffix(14))
+            }
+        }
+        metricHistory = next
+        LocalStore.save(value: metricHistory, key: metricHistoryKey)
+    }
+
+    private func estimateSleepHours(from sleep: SleepLog) -> Double {
+        HumanDeltaScheduleAdvisor.estimatedSleepHours(sleep: sleep)
     }
 
     private static func load<T: Codable>(key: String, fallback: T) -> T {

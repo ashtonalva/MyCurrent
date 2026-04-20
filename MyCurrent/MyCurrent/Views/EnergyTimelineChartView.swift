@@ -4,6 +4,16 @@ import Charts
 struct EnergyTimelineChartView: View {
     let points: [EnergyPoint]
     let caffeineMarkers: [CaffeineMarker]
+    /// Light overlay labels for dark / ocean backgrounds (e.g. Scenario Lab).
+    var overlayLegendUsesLightColors: Bool = false
+
+    private var overlayCaptionColor: Color {
+        overlayLegendUsesLightColors ? Color.white.opacity(0.88) : Color.secondary
+    }
+
+    private var overlayTitleColor: Color {
+        overlayLegendUsesLightColors ? Color.white.opacity(0.95) : AppTheme.sectionHeader
+    }
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -47,16 +57,16 @@ struct EnergyTimelineChartView: View {
             .chartXScale(domain: (8 * 60)...(22 * 60))
             .chartXAxis(.hidden)
             .chartYAxis(.hidden)
-            .frame(maxWidth: .infinity, minHeight: 240, maxHeight: 240)
+            .frame(maxWidth: .infinity, minHeight: 204, maxHeight: 204)
 
             Label("Energy Timeline", systemImage: "waveform.path.ecg")
                 .font(.headline)
-                .foregroundStyle(AppTheme.sectionHeader)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
+                .foregroundStyle(overlayTitleColor)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
                 .background(.ultraThinMaterial.opacity(0.6))
                 .clipShape(Capsule())
-                .padding(8)
+                .padding(6)
 
             VStack {
                 Spacer()
@@ -65,33 +75,33 @@ struct EnergyTimelineChartView: View {
                         ForEach([8, 10, 12, 14, 16, 18, 20], id: \.self) { hour in
                             Text(shortHourLabel(hour))
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(overlayCaptionColor)
                         }
                     }
                     Spacer()
                     Text("Orange markers = caffeine events")
                         .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 5)
+                        .foregroundStyle(overlayCaptionColor)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 4)
                         .background(.ultraThinMaterial.opacity(0.45))
                         .clipShape(Capsule())
-                        .padding(8)
+                        .padding(6)
                 }
             }
             
             VStack {
                 HStack {
                     Spacer()
-                    VStack(alignment: .trailing, spacing: 24) {
+                    VStack(alignment: .trailing, spacing: 14) {
                         ForEach([100, 80, 60, 40, 20], id: \.self) { value in
                             Text("\(value)")
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(overlayCaptionColor)
                         }
                     }
-                    .padding(.top, 12)
-                    .padding(.trailing, 8)
+                    .padding(.top, 8)
+                    .padding(.trailing, 6)
                 }
                 Spacer()
             }

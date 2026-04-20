@@ -50,9 +50,10 @@ struct WhatIfSimulatorView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Label("What-If Simulator", systemImage: "slider.horizontal.3")
                                 .font(.headline)
+                                .foregroundStyle(.white)
                             Text("Adjust inputs to preview how your score and ocean state would change.")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.white.opacity(0.92))
                         }
                         .listRowBackground(Color.clear)
                     }
@@ -105,20 +106,26 @@ struct WhatIfSimulatorView: View {
                     Section {
                         EnergyTimelineChartView(
                             points: previewState.energyPoints,
-                            caffeineMarkers: previewState.caffeineMarkers
+                            caffeineMarkers: previewState.caffeineMarkers,
+                            overlayLegendUsesLightColors: true
                         )
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                     }
                 }
                 .fontDesign(.rounded)
+                .foregroundStyle(.white)
                 .scrollContentBackground(.hidden)
+                .tint(AppTheme.accent)
                 .padding(.horizontal, 4)
             }
             .navigationTitle("Scenario Lab")
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
+                        .foregroundStyle(.white)
                 }
             }
             .onAppear {
@@ -144,9 +151,10 @@ struct WhatIfSimulatorView: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Text(title)
+                        .foregroundStyle(.white)
                     Spacer()
                     Text(value)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.white.opacity(0.92))
                         .monospacedDigit()
                 }
                 Slider(value: binding, in: range, step: step)
@@ -161,9 +169,10 @@ struct WhatIfSimulatorView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.white.opacity(0.85))
             Text(value)
                 .font(.system(.subheadline, design: .rounded).weight(.bold))
+                .foregroundStyle(.white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
         }

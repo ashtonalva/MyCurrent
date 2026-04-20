@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Human Delta API secrets (copy from Secrets.example.plist)
+MyCurrent/MyCurrent/MyCurrent/Secrets.plist
